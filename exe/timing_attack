@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+require 'timing_attack'
+require 'optparse'
+
+options = {}
+opt_parser = OptionParser.new do |opts|
+  opts.program_name = File.basename(__FILE__)
+  opts.banner = "#{opts.program_name} [options] -a <input> -b <input> -u <target> <inputs>"
+  opts.on("-u URL", "--url URL", "URL of endpoint to profile") { |str| options[:url] = str }
+  opts.on("-a A_EXAMPLE", "--a-example A_EXAMPLE", "Known test case that belongs to Group A") { |str| options[:a_example] = str }
+  opts.on("-b B_EXAMPLE", "--b-example B_EXAMPLE", "Known test case that belongs to Group B") { |str| options[:b_example] = str }
+  opts.on("-n NUM", "--number NUM", "Requests per input") { |num| options[:iterations] = num.to_i }
+  opts.on("--a-name A_NAME", "Name of Group A") { |str| options[:a_name] = str }
+  opts.on("--b-name B_NAME", "Name of Group B") { |str| options[:b_name] = str }
+  opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
+  opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
+  opts.on_tail("-v", "--version", "Print version information") do
+    gem = Gem::Specification.find_by_name('timing_attack')
+    puts "#{gem.name} #{gem.version}"
+    exit
+  end
+  opts.on_tail("-h", "--help", "Display this screen") { puts opts ; exit }
+end
+
+begin
+  opt_parser.parse!
+rescue OptionParser::InvalidOption => e
+  STDERR.puts e.message
+  puts opt_parser
+  exit
+end
+
+begin
+  atk = TimingAttack::Attacker.new(inputs: ARGV, options: options)
+  atk.run!
+  puts atk
+rescue ArgumentError => e
+  STDERR.puts e.message
+  puts opt_parser
+  exit
+end
