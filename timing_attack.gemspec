@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Forrest Fleming"]
   spec.email         = ["ffleming@gmail.com"]
 
-  spec.summary       = "Performtiming attacks against web applications"
+  spec.summary       = "Perform timing attacks against web applications"
   spec.description   = "Profile web applications by noting differences in response times based on input values"
   spec.homepage      = "https://www.github.com/ffleming/timing_attack"
 

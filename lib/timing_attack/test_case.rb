@@ -5,6 +5,7 @@ module TimingAttack
       @input = input
       @options = options
       @times = []
+      @percentiles = []
     end
 
     def test!
@@ -21,16 +22,22 @@ module TimingAttack
       times.push(diff)
     end
 
-    def to_s
-      "#{input.ljust(options.fetch(:width))}~#{sprintf('%.4f', mean_time)}s"
+    def mean
+      times.reduce(:+) / times.size.to_f
     end
 
-    def mean_time
-      times.reduce(:+) / times.size.to_f
+    def percentile(n)
+      raise ArgumentError.new("Can't have a percentile > 100") if n > 100
+      if percentiles[n].nil?
+        position = ((times.length - 1) * (n/100.0)).to_i
+        percentiles[n] = times.sort[position]
+      else
+        percentiles[n]
+      end
     end
 
     private
 
-    attr_reader :times, :options
+    attr_reader :times, :options, :percentiles
   end
 end
