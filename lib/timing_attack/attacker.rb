@@ -16,6 +16,7 @@ module TimingAttack
       warmup!
       benchmark!
       attack!
+      group!
     end
 
     def to_s
@@ -30,7 +31,7 @@ module TimingAttack
 
     private
 
-    attr_reader :attacks, :options
+    attr_reader :attacks, :options, :grouper
 
     def warmup!
       @warmup_test ||= TestCase.new(input: a_example, options: options)
@@ -53,7 +54,14 @@ module TimingAttack
           attack_bar.increment
         end
       end
-      attacks.each { |attack| attack.derive_group_from(a_test: a_benchmark, b_test: b_benchmark) }
+    end
+
+    def group!
+      @grouper = grouper_klass.new(
+        a_test: a_benchmark,
+        b_test: b_benchmark,
+        attacks: attacks
+      )
     end
 
     def a_benchmark
@@ -69,11 +77,11 @@ module TimingAttack
     end
 
     def a_attacks
-      attacks.select { |a| a.group_a? }
+      grouper.group_a
     end
 
     def b_attacks
-      attacks.select { |a| a.group_b? }
+      grouper.group_b
     end
 
     def attack_string
@@ -114,7 +122,7 @@ module TimingAttack
       @null_bar ||= @null_bar_klass.new
     end
 
-    %i(iterations url verbose a_name b_name a_example b_example width method).each do |sym|
+    %i(iterations url verbose a_name b_name a_example b_example width method grouper_klass).each do |sym|
       define_method(sym) { options.fetch sym }
     end
     alias_method :verbose?, :verbose
@@ -124,7 +132,8 @@ module TimingAttack
       a_name: "Group A",
       b_name: "Group B",
       method: :get,
-      iterations: 5
+      iterations: 5,
+      grouper_klass: Grouper::MeanGrouper
     }.freeze
   end
 end

@@ -25,26 +25,6 @@ module TimingAttack
       "#{input.ljust(options.fetch(:width))}~#{sprintf('%.4f', mean_time)}s"
     end
 
-    def derive_group_from(a_test: , b_test: )
-      unless a_test.is_a?(TestCase) && b_test.is_a?(TestCase)
-        raise ArgumentError.new("a_test and b_test must be TestCases")
-      end
-      d_a = (mean_time - a_test.mean_time).abs
-      d_b = (mean_time - b_test.mean_time).abs
-      @group_a = (d_a < d_b)
-    end
-
-    def group_a
-      raise ArgumentError.new("Have not yet determined group membership") if @group_a.nil?
-      @group_a
-    end
-    alias_method :group_a?, :group_a
-
-    def group_b
-      !group_a
-    end
-    alias_method :group_b?, :group_b
-
     def mean_time
       times.reduce(:+) / times.size.to_f
     end
