@@ -25,6 +25,9 @@ module TimingAttack
     def report
       ret = ''
       hsh = grouper.serialize
+      if hsh[:spike_delta] < threshold
+        ret << "\n* Spike delta of #{sprintf('%.4f', hsh[:spike_delta])} is less than #{sprintf('%.4f', threshold)} * \n\n"
+      end
       [:short, :long].each do |sym|
         ret << "#{sym.to_s.capitalize} tests:\n"
         hsh.fetch(sym).each do |input, time|
@@ -58,7 +61,7 @@ module TimingAttack
                   else
                     { percentile: options.fetch(:percentile) }
                   end
-      @grouper = Grouper.new(attacks: attacks, group_by: group_by, threshold: threshold)
+      @grouper = Grouper.new(attacks: attacks, group_by: group_by)
     end
 
     def attack_bar
@@ -96,7 +99,7 @@ module TimingAttack
       method: :get,
       iterations: 5,
       mean: false,
-      threshold: 0.05,
+      threshold: 0.025,
       percentile: 10
     }.freeze
   end

@@ -12,24 +12,21 @@ discrepancies in the application's response time.
 ## Usage
 
 ```
-timing_attack [options] -a <input> -b <input> -u <target> <inputs>
+timing_attack [options] -u <target> <inputs>
     -u, --url URL                    URL of endpoint to profile
-    -a, --a-example A_EXAMPLE        Known test case that belongs to Group A
-    -b, --b-example B_EXAMPLE        Known test case that belongs to Group B
     -n, --number NUM                 Requests per input
-        --a-name A_NAME              Name of Group A
-        --b-name B_NAME              Name of Group B
+    -t, --threshold NUM              Minimum threshold, in seconds, for meaningfulness (default: 0.05)
     -p, --post                       Use POST, not GET
     -q, --quiet                      Quiet mode (don't display progress bars)
+        --mean                       Use mean for calculations
+        --median                     Use median for calculations
+        --percentile N               Use Nth percentile for calculations
     -v, --version                    Print version information
     -h, --help                       Display this screen
 ```
 
-**NB**: If the provided examples are invalid, discvery will fail.  Always check
-your results!  If very similar inputs are being sorted differently, you may have
-used bad training data.
-
 ### An example
+
 Consider that we we want to gather information from a Rails server running
 locally at `http://localhost:3000`.  Let's say that we know the following:
 * `charles@poodles.com` exists in the database
@@ -41,34 +38,39 @@ the database.
 We execute (using `-q` to suppress the progress bar)
 ```bash
 % timing_attack -q -u http://localhost:3000/login \
-                -a charles@poodles.com -b invalid@fake.fake \
-                candidate@address.com other@address.com
+                candidate@address.com other@address.com \
+                charles@poodles.com invalid@fake.fake
 ```
 ```
-Group A:
-  candidate@address.com         ~0.1969s
-Group B:
-  other@address.com             ~0.1096s
+Short tests:
+  other@address.com             0.0926
+  invalid@fake.fake             0.0947
+Long tests:
+  candidate@address.com         0.1708
+  charles@poodles.com           0.1823
 ```
-`candidate@address.com` is in the same group as `charles@poodles.com` (Group A),
-while `other@address.com` is in Group B with `invalid@fake.fake`
-Thus we know that `candidate@address.com` exists in the database, and that
-`other@example.com` does not.
 
-To make things a bit friendlier, we can rename groups with the `--a-name` and
-`--b-name` options:
-```bash
-% timing_attack -q -u http://localhost:3000/login \
-                -a charles@poodles.com -b invalid@fake.fake \
-                --a-name 'Valid logins' --b-name 'Invalid logins' \
-                candidate@address.com other@address.com
-```
-```
-Valid logins:
-  candidate@address.com         ~0.1988s
-Invalid logins:
-  other@address.com             ~0.1065s
-```
+Note that you don't need to know anything about the database when attacking.  It
+is, however, nice to have a bit of information as a sanity check.
+
+## How it works
+
+The various inputs are each thrown at the endpoint `--number` times.  The
+`--percentile`th percentile of each input's results is considered the
+representative result for that input.  Inputs are then sorted according to
+their representative results and the largest spike in their graph is found.
+Results then split into short and long groups according to this spike.
+
+The `--mean` flag uses the average of results for a particular input as its
+representative result.  The `--median` flag simply uses the 50th percentile.
+According to [Crosby, Wallach, and
+Reidi](https://www.cs.rice.edu/~dwallach/pub/crosby-timing2009.pdf), results
+with percentiles above ~15, median, and mean are all quite noisy, so you should
+probably keep `--percentile` low.
+
+I was very surprised to find that I get correct results against remote targets
+with `--num` around 20.  Default is 5, as that has been sufficient in my tests
+for LAN and local targets.
 
 ## Contributing
 
@@ -76,14 +78,14 @@ Bug reports and pull requests are welcome [here](https://github.com/ffleming/tim
 
 ## Disclaimer
 
-TimingAttack is quick and dirty.  It is meant to exploit *known* timing attacks based
-upon two known values.  TimingAttack is *not* for discovering the existence of
-timing-based vulnerabilities.
+TimingAttack is quick and dirty.
 
 Also, don't use TimingAttack against machines that aren't yours.
 
 ## Todo
 * Tests
-* Better heuristic than naïve mean comparison
-* Auto-discovering heuristic that doesn't require example test cases
+* More intelligent filtering than nth-percentile + spike detection
+  * CW&R's box test
 * Customizable query parameters
+* Threading for requests?
+  * Custom or just use Typhoeus

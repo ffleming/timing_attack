@@ -1,9 +1,8 @@
 module TimingAttack
   class Grouper
     attr_reader :short_tests, :long_tests
-    def initialize(attacks: , group_by: {}, threshold: 0.05)
+    def initialize(attacks: , group_by: {})
       @attacks = attacks
-      @threshold = threshold
       setup_grouping_opts!(group_by)
       @short_tests = []
       @long_tests = []
@@ -16,8 +15,9 @@ module TimingAttack
       @serialize ||= {}.tap do |h|
         h[:attack_method] = test_method
         h[:attack_args]   = test_args
-        h[:short]   = serialize_tests(short_tests)
-        h[:long]     = serialize_tests(long_tests)
+        h[:short]         = serialize_tests(short_tests)
+        h[:long]          = serialize_tests(long_tests)
+        h[:spike_delta]   = spike_delta
       end
     end
 
@@ -25,7 +25,7 @@ module TimingAttack
 
     ALLOWED_TEST_SYMBOLS = %i(mean median percentile).freeze
 
-    attr_reader :test_method, :test_args, :attacks, :test_hash, :threshold
+    attr_reader :test_method, :test_args, :attacks, :test_hash, :spike_delta
 
     def setup_grouping_opts!(group_by)
       case group_by
@@ -76,15 +76,11 @@ module TimingAttack
 
     def group_attacks
       spike = decorated_attacks.max { |a,b| a[:delta] <=> b[:delta] }
-      if spike[:delta] < threshold
-        msg = "Maximum delta was #{sprintf('%.4f', spike[:delta])}s, "
-        msg << "which is less than threshold of #{sprintf('%.4f', threshold)}s"
-        raise StandardError.new(msg)
-      end
       index = decorated_attacks.index(spike)
       stripped = decorated_attacks.map {|a| a[:attack] }
       @short_tests = stripped[0..(index-1)]
       @long_tests = stripped[index..-1]
+      @spike_delta = spike[:delta]
     end
 
     def decorated_attacks

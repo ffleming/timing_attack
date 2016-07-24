@@ -7,15 +7,15 @@ opt_parser = OptionParser.new do |opts|
   opts.program_name = File.basename(__FILE__)
   opts.banner = "#{opts.program_name} [options] -u <target> <inputs>"
   opts.on("-u URL", "--url URL", "URL of endpoint to profile") { |str| options[:url] = str }
-  opts.on("-n NUM", "--number NUM", "Requests per input") { |num| options[:iterations] = num.to_i }
-  opts.on("-t NUM", "--threshold NUM", "Minimum threshold, in seconds, for meaningfulness (default: 0.05)") do |num|
+  opts.on("-n NUM", "--number NUM", "Requests per input (default: 0.025)") { |num| options[:iterations] = num.to_i }
+  opts.on("-t NUM", "--threshold NUM", "Minimum threshold, in seconds, for meaningfulness (default: 0.025)") do |num|
     options[:threshold] = num.to_f
   end
   opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
   opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
   opts.on("--mean", "Use mean for calculations") { |bool| options[:mean] = bool }
   opts.on("--median", "Use median for calculations") { |bool| options[:median] = bool }
-  opts.on("--percentile N", "Use Nth percentile for calculations") { |num| options[:percentile] = num.to_i }
+  opts.on("--percentile N", "Use Nth percentile for calculations (default: 10)") { |num| options[:percentile] = num.to_i }
   opts.on_tail("-v", "--version", "Print version information") do
     gem = Gem::Specification.find_by_name('timing_attack')
     puts "#{gem.name} #{gem.version}"
