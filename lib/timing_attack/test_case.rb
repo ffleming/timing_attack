@@ -6,20 +6,29 @@ module TimingAttack
       @options = options
       @times = []
       @percentiles = []
+      @hydra_requests = []
     end
 
-    def test!
-      httparty_opts = {
-        body: {
+    def generate_hydra_request!
+      req = Typhoeus::Request.new(
+        options.fetch(:url),
+        method: options.fetch(:method),
+        params: {
           login: input,
           password: "test" * 1000
         },
-        timeout: 5
-      }
-      before = Time.now
-      HTTParty.send(options.fetch(:method), options.fetch(:url), httparty_opts)
-      diff = (Time.now - before)
-      times.push(diff)
+        followlocation: true
+      )
+      @hydra_requests.push req
+      req
+    end
+
+    def process!
+      @hydra_requests.each do |request|
+        response = request.response
+        diff = response.time - response.namelookup_time
+        @times.push(diff)
+      end
     end
 
     def mean

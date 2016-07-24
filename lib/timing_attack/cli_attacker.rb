@@ -13,7 +13,6 @@ module TimingAttack
 
     def run!
       puts "Target: #{url}" if verbose?
-      warmup!
       attack!
       puts report
     end
@@ -38,20 +37,19 @@ module TimingAttack
       ret
     end
 
-    def warmup!
-      2.times do
-        warmup = TestCase.new(input: attacks.sample.input, options: options)
-        warmup.test!
-      end
-    end
-
     def attack!
+      hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
       iterations.times do
         attacks.each do |attack|
-          attack.test!
-          attack_bar.increment
+          req = attack.generate_hydra_request!
+          req.on_complete do |response|
+            attack_bar.increment
+          end
+          hydra.queue req
         end
       end
+      hydra.run
+      attacks.each(&:process!)
     end
 
     def grouper
@@ -89,7 +87,7 @@ module TimingAttack
       @null_bar ||= @null_bar_klass.new
     end
 
-    %i(iterations url verbose width method mean percentile threshold).each do |sym|
+    %i(iterations url verbose width method mean percentile threshold concurrency).each do |sym|
       define_method(sym) { options.fetch sym }
     end
     alias_method :verbose?, :verbose
@@ -97,10 +95,11 @@ module TimingAttack
     DEFAULT_OPTIONS = {
       verbose: false,
       method: :get,
-      iterations: 5,
+      iterations: 50,
       mean: false,
       threshold: 0.025,
-      percentile: 10
+      percentile: 3,
+      concurrency: 15
     }.freeze
   end
 end

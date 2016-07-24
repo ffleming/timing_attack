@@ -1,4 +1,4 @@
-require 'httparty'
+require 'typhoeus'
 require 'ruby-progressbar'
 require "timing_attack/version"
 require "timing_attack/grouper"

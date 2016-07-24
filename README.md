@@ -14,16 +14,19 @@ discrepancies in the application's response time.
 ```
 timing_attack [options] -u <target> <inputs>
     -u, --url URL                    URL of endpoint to profile
-    -n, --number NUM                 Requests per input
-    -t, --threshold NUM              Minimum threshold, in seconds, for meaningfulness (default: 0.05)
+    -n, --number NUM                 Requests per input (default: 50)
+    -c, --concurrency NUM            Number of concurrent requests (default: 15)
+    -t, --threshold NUM              Minimum threshold, in seconds, for meaningfulness (default: 0.025)
     -p, --post                       Use POST, not GET
     -q, --quiet                      Quiet mode (don't display progress bars)
+        --percentile N               Use Nth percentile for calculations (default: 3)
         --mean                       Use mean for calculations
         --median                     Use median for calculations
-        --percentile N               Use Nth percentile for calculations
     -v, --version                    Print version information
     -h, --help                       Display this screen
 ```
+
+Note that setting concurrency too high can add significant jitter to your results.  If you know that your inputs contain elements in both long and short response groups but your results are bogus, try backing off on concurrency.  The default value of 15 is a good starting place for robust remote targets, but you might need to dial it back to as far as 1 (especially if you're attacking a single-threaded server)
 
 ### An example
 

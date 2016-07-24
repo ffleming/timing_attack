@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.licenses      = %q(MIT)
 
   spec.add_runtime_dependency "ruby-progressbar", "~> 1.8"
-  spec.add_runtime_dependency "httparty", "~> 0.13.3"
+  spec.add_runtime_dependency "typhoeus", "~> 1.1"
   spec.add_development_dependency "bundler", "~> 1.12"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
