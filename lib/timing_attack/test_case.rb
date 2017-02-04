@@ -13,10 +13,7 @@ module TimingAttack
       req = Typhoeus::Request.new(
         options.fetch(:url),
         method: options.fetch(:method),
-        params: {
-          login: input,
-          password: "test" * 1000
-        },
+        params: default_params.merge(options.fetch(:params, {})),
         followlocation: true
       )
       @hydra_requests.push req
@@ -47,6 +44,12 @@ module TimingAttack
 
     private
 
+    def default_params
+      {
+        login: input,
+        password: "test" * 1000
+      }
+    end
     attr_reader :times, :options, :percentiles
   end
 end
