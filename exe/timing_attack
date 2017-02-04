@@ -65,6 +65,6 @@ rescue ArgumentError => e
   puts opt_parser
   exit
 rescue Interrupt => e
-  puts "\nCaught interrupt, existing"
+  puts "\nCaught interrupt, exiting"
   exit
 end
