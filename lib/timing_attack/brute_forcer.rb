@@ -1,5 +1,7 @@
 module TimingAttack
   class BruteForcer
+    include TimingAttack::Attacker
+
     def initialize(options: {})
       @options = DEFAULT_OPTIONS.merge(options)
       raise ArgumentError.new("Must provide :url key") if url.nil?
@@ -7,19 +9,7 @@ module TimingAttack
       @iterations = options.fetch(:iterations, 20)
     end
 
-    def run!
-      puts "Target: #{url}" if verbose?
-      puts "Method: #{method.to_s.upcase}"
-      attack!
-    end
-
     private
-    attr_reader :attacks, :options
-
-    %i(iterations url verbose width method mean percentile threshold concurrency).each do |sym|
-      define_method(sym) { options.fetch sym }
-    end
-    alias_method :verbose?, :verbose
 
     BYTES = (' '..'z').to_a
     def attack!
@@ -35,7 +25,8 @@ module TimingAttack
             req = attack.generate_hydra_request!
             req.on_complete do |response|
               print "\r#{' ' * (known.length + 4)}"
-              print "\r#{spinner} '#{known}'"
+              output.increment
+              print "'#{known}'"
             end
             hydra.queue req
           end
@@ -50,32 +41,14 @@ module TimingAttack
         known = results.first
       end
     end
+  end
 
-    SPINNER = %w(| / - \\)
-    def spinner
-      @spinner_i ||= 0
-      @spinner_i += 1
-      SPINNER[@spinner_i % SPINNER.length]
-    end
-
-    def attack_byte!
-      hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
-      iterations.times do
-        attacks.each do |attack|
-          req = attack.generate_hydra_request!
-          req.on_complete do |response|
-            attack_bar.increment
-          end
-          hydra.queue req
-        end
-      end
-      hydra.run
-      attacks.each(&:process!)
-    end
+  def output
+    @output ||= TimingAttack::Spinner.new
   end
 
   DEFAULT_OPTIONS = {
-    verbose: false,
+    verbose: true,
     method: :get,
     iterations: 50,
     mean: false,
