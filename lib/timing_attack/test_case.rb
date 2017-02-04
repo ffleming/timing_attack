@@ -1,6 +1,8 @@
-=begin
+require 'uri'
 module TimingAttack
   class TestCase
+    INPUT_FLAG = "INPUT"
+
     attr_reader :input
     def initialize(input: , options: {})
       @input = input
@@ -8,13 +10,13 @@ module TimingAttack
       @times = []
       @percentiles = []
       @hydra_requests = []
+      @url = URI.escape options.fetch(:url).gsub(INPUT_FLAG, input)
     end
 
     def generate_hydra_request!
       req = Typhoeus::Request.new(
-        options.fetch(:url),
+        @url,
         method: options.fetch(:method),
-        params: default_params.merge(options.fetch(:params, {})),
         followlocation: true
       )
       @hydra_requests.push req
@@ -45,12 +47,6 @@ module TimingAttack
 
     private
 
-    def default_params
-      {
-        password: input
-      }
-    end
     attr_reader :times, :options, :percentiles
   end
 end
-=end

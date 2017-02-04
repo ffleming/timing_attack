@@ -25,11 +25,11 @@ module TimingAttack
       known = ""
       while(true)
         attacks = BYTES.map do |byte|
-          TimingAttack::TestCases::Base.new(input: "#{known}#{byte}",
-                                            options: {
-                                                       url: url,
-                                                       method: :get,
-                                                     })
+          TimingAttack::TestCases.new(input: "#{known}#{byte}",
+                                      options: {
+                                                 url: url,
+                                                 method: :get,
+                                               })
         end
         hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
         iterations.times do

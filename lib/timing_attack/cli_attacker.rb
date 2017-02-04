@@ -8,7 +8,7 @@ module TimingAttack
       unless @options.has_key? :width
         @options[:width] = inputs.dup.map(&:length).push(30).sort.last
       end
-      @attacks = inputs.map { |input| TestCases::Base.new(input: input, options: @options) }
+      @attacks = inputs.map { |input| TestCase.new(input: input, options: @options) }
     end
 
     def run!
