@@ -9,6 +9,7 @@ module TimingAttack
 
     def run!
       puts "Target: #{url}" if verbose?
+      puts "Method: #{method.to_s.upcase}"
       attack!
     end
 
