@@ -80,7 +80,6 @@ module TimingAttack
 
     def default_options
       super.merge(
-        verbose: false,
         width: inputs.dup.map(&:length).push(30).sort.last,
       ).freeze
     end
