@@ -26,18 +26,15 @@ module TimingAttack
       while(true)
         attacks = BYTES.map do |byte|
           TimingAttack::TestCase.new(input: "#{known}#{byte}",
-                                      options: {
-                                                 url: url,
-                                                 method: :get,
-                                               })
+                                      options: options)
         end
         hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
         iterations.times do
           attacks.each do |attack|
             req = attack.generate_hydra_request!
             req.on_complete do |response|
-              puts "\e[H\e[2J"
-              puts "#{spinner} '#{known}'"
+              print "\r#{' ' * (known.length + 4)}"
+              print "\r#{spinner} '#{known}'"
             end
             hydra.queue req
           end

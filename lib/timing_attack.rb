@@ -1,4 +1,5 @@
 require 'typhoeus'
+require 'json'
 require 'ruby-progressbar'
 require "timing_attack/version"
 require "timing_attack/brute_forcer"

@@ -14,14 +14,17 @@ module TimingAttack
         options.fetch(:url).
         gsub(INPUT_FLAG, input)
       )
-
+      @params = params_from(options.fetch :params, {})
+      @body = params_from(options.fetch :body, {})
     end
 
     def generate_hydra_request!
       req = Typhoeus::Request.new(
         @url,
         method: options.fetch(:method),
-        followlocation: true
+        followlocation: true,
+        params: params,
+        body: body
       )
       @hydra_requests.push req
       req
@@ -51,6 +54,21 @@ module TimingAttack
 
     private
 
-    attr_reader :times, :options, :percentiles
+    def params_from(obj)
+      case obj
+      when String
+        obj.gsub(INPUT_FLAG, input)
+      when Symbol
+        params_from(obj.to_s).to_sym
+      when Hash
+        Hash[obj.map {|k, v| [params_from(k), params_from(v)]}]
+      when Array
+        obj.map {|el| params_from(el) }
+      else
+        obj
+      end
+    end
+
+    attr_reader :times, :options, :percentiles, :params, :body
   end
 end
