@@ -26,7 +26,7 @@ opt_parser = OptionParser.new do |opts|
   opts.on("--body STR", "JSON of body paramets to be sent to Typhoeus.  'INPUT' will be replaced with the attack string") do |str|
     options[:body] = JSON.parse(str)
   end
-  opts.on("--percentile N", "Use Nth percentile for calculations (default: 3)") { |num| options[:percentile] = num.to_i }
+  opts.on("--percentile NUM", "Use NUMth percentile for calculations (default: 3)") { |num| options[:percentile] = num.to_i }
   opts.on("--mean", "Use mean for calculations") { |bool| options[:mean] = bool }
   opts.on("--median", "Use median for calculations") { |bool| options[:median] = bool }
   opts.on_tail("-v", "--version", "Print version information") do
