@@ -10,7 +10,11 @@ module TimingAttack
       @times = []
       @percentiles = []
       @hydra_requests = []
-      @url = URI.escape options.fetch(:url).gsub(INPUT_FLAG, input)
+      @url = URI.escape(
+        options.fetch(:url).
+        gsub(INPUT_FLAG, input)
+      )
+
     end
 
     def generate_hydra_request!

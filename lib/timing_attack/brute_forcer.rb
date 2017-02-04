@@ -47,7 +47,6 @@ module TimingAttack
         grouper = Grouper.new(attacks: attacks, group_by: { percentile: 3 })
         results = grouper.long_tests.map(&:input)
         if grouper.long_tests.count > 1
-          puts grouper.serialize
           raise StandardError.new("Got too many possibilities: #{results.join(', ')}")
         end
         known = results.first
