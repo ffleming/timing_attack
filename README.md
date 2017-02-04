@@ -89,6 +89,3 @@ Also, don't use TimingAttack against machines that aren't yours.
 * Tests
 * More intelligent filtering than nth-percentile + spike detection
   * CW&R's box test
-* Customizable query parameters
-* Threading for requests?
-  * Custom or just use Typhoeus
