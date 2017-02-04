@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'timing_attack'
-require 'optparse'
 
 options = {}
 opt_parser = OptionParser.new do |opts|
@@ -18,7 +17,14 @@ opt_parser = OptionParser.new do |opts|
   end
   opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
   opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
-  opts.on("--percentile N", "Use Nth percentile for calculations (default: 3)") { |num| options[:percentile] = num.to_i }
+  opts.on("--brute_force", "Brute force mode") { |bool| options[:brute_force] = bool }
+  opts.on("--parameters STR", "JSON hash of parameters.  'INPUT' will be replaced with the attack string") do |str|
+    options[:params] = JSON.parse(str)
+  end
+  opts.on("--body STR", "JSON of body paramets to be sent to Typhoeus.  'INPUT' will be replaced with the attack string") do |str|
+    options[:body] = JSON.parse(str)
+  end
+  opts.on("--percentile NUM", "Use NUMth percentile for calculations (default: 3)") { |num| options[:percentile] = num.to_i }
   opts.on("--mean", "Use mean for calculations") { |bool| options[:mean] = bool }
   opts.on("--median", "Use median for calculations") { |bool| options[:median] = bool }
   opts.on_tail("-v", "--version", "Print version information") do
@@ -46,10 +52,17 @@ elsif options[:mean]
 end
 
 begin
-  atk = TimingAttack::CliAttacker.new(inputs: ARGV, options: options)
+  atk = if options.delete(:brute_force)
+          TimingAttack::BruteForcer.new(options: options)
+        else
+          TimingAttack::Enumerator.new(inputs: ARGV, options: options)
+        end
   atk.run!
 rescue ArgumentError => e
   STDERR.puts e.message
   puts opt_parser
+  exit
+rescue Interrupt => e
+  puts "\nCaught interrupt, exiting"
   exit
 end

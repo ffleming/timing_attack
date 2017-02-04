@@ -1,25 +1,24 @@
 module TimingAttack
-  class CliAttacker
+  class Enumerator
+    include TimingAttack::Attacker
+
     def initialize(inputs: [], options: {})
-      @options = DEFAULT_OPTIONS.merge(options)
+      @inputs = inputs
+      @options = default_options.merge(options)
       raise ArgumentError.new("url is a required argument") unless options.has_key? :url
       raise ArgumentError.new("Need at least 2 inputs") if inputs.count < 2
       raise ArgumentError.new("Iterations can't be < 3") if iterations < 3
-      unless @options.has_key? :width
-        @options[:width] = inputs.dup.map(&:length).push(30).sort.last
-      end
       @attacks = inputs.map { |input| TestCase.new(input: input, options: @options) }
     end
 
     def run!
-      puts "Target: #{url}" if verbose?
-      attack!
-      puts report
+     super
+     puts report
     end
 
     private
 
-    attr_reader :attacks, :options, :grouper
+    attr_reader :grouper, :inputs
 
     def report
       ret = ''
@@ -43,7 +42,7 @@ module TimingAttack
         attacks.each do |attack|
           req = attack.generate_hydra_request!
           req.on_complete do |response|
-            attack_bar.increment
+            output.increment
           end
           hydra.queue req
         end
@@ -62,20 +61,12 @@ module TimingAttack
       @grouper = Grouper.new(attacks: attacks, group_by: group_by)
     end
 
-    def attack_bar
+    def output
       return null_bar unless verbose?
-      @attack_bar ||= ProgressBar.create(title: "  Attacking".ljust(15),
+      @output ||= ProgressBar.create(title: "  Attacking".ljust(15),
                                          total: iterations * attacks.length,
                                          format: bar_format
                                         )
-    end
-
-    def benchmark_bar
-      return null_bar unless verbose?
-      @benchmark_bar ||= ProgressBar.create(title: "  Benchmarking".ljust(15),
-                                            total: iterations * 2,
-                                            format: bar_format
-                                           )
     end
 
     def bar_format
@@ -87,19 +78,10 @@ module TimingAttack
       @null_bar ||= @null_bar_klass.new
     end
 
-    %i(iterations url verbose width method mean percentile threshold concurrency).each do |sym|
-      define_method(sym) { options.fetch sym }
+    def default_options
+      super.merge(
+        width: inputs.dup.map(&:length).push(30).sort.last,
+      ).freeze
     end
-    alias_method :verbose?, :verbose
-
-    DEFAULT_OPTIONS = {
-      verbose: false,
-      method: :get,
-      iterations: 50,
-      mean: false,
-      threshold: 0.025,
-      percentile: 3,
-      concurrency: 15
-    }.freeze
   end
 end
