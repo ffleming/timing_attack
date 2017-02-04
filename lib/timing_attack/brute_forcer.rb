@@ -25,11 +25,11 @@ module TimingAttack
         TimingAttack::TestCase.new(input: "#{known}#{byte}",
                                    options: options)
       end
-      run_attacks!
-      process_attacks!
+      run_attacks_for_single_byte!
+      process_attacks_for_single_byte!
     end
 
-    def run_attacks!
+    def run_attacks_for_single_byte!
       hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
       iterations.times do
         attacks.each do |attack|
@@ -45,7 +45,7 @@ module TimingAttack
       hydra.run
     end
 
-    def process_attacks!
+    def process_attacks_for_single_byte!
       attacks.each(&:process!)
       grouper = Grouper.new(attacks: attacks, group_by: { percentile: options.fetch(:percentile) })
       results = grouper.long_tests.map(&:input)
