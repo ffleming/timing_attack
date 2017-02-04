@@ -11,6 +11,8 @@ module TimingAttack
       if verbose?
         puts "Target: #{url}"
         puts "Method: #{method.to_s.upcase}"
+        puts "Parameters: #{params.inspect}" unless params.empty?
+        puts "Body: #{body.inspect}" unless body.empty?
       end
       attack!
     end
