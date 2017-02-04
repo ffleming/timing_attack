@@ -20,7 +20,7 @@ module TimingAttack
 
     def generate_hydra_request!
       req = Typhoeus::Request.new(
-        @url,
+        url,
         method: options.fetch(:method),
         followlocation: true,
         params: params,
@@ -69,6 +69,6 @@ module TimingAttack
       end
     end
 
-    attr_reader :times, :options, :percentiles, :params, :body
+    attr_reader :times, :options, :percentiles, :url, :params, :body
   end
 end
