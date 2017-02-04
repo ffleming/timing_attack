@@ -17,5 +17,19 @@ module TimingAttack
       define_method(sym) { options.fetch sym }
     end
     alias_method :verbose?, :verbose
+
+    def default_options
+      {
+        verbose: true,
+        method: :get,
+        iterations: 50,
+        mean: false,
+        threshold: 0.025,
+        percentile: 3,
+        concurrency: 15,
+        params: {},
+        body: {},
+      }.freeze
+    end
   end
 end

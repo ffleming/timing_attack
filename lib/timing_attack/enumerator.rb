@@ -3,13 +3,11 @@ module TimingAttack
     include TimingAttack::Attacker
 
     def initialize(inputs: [], options: {})
-      @options = DEFAULT_OPTIONS.merge(options)
+      @inputs = inputs
+      @options = default_options.merge(options)
       raise ArgumentError.new("url is a required argument") unless options.has_key? :url
       raise ArgumentError.new("Need at least 2 inputs") if inputs.count < 2
       raise ArgumentError.new("Iterations can't be < 3") if iterations < 3
-      unless @options.has_key? :width
-        @options[:width] = inputs.dup.map(&:length).push(30).sort.last
-      end
       @attacks = inputs.map { |input| TestCase.new(input: input, options: @options) }
     end
 
@@ -20,7 +18,7 @@ module TimingAttack
 
     private
 
-    attr_reader :grouper
+    attr_reader :grouper, :inputs
 
     def report
       ret = ''
@@ -80,14 +78,11 @@ module TimingAttack
       @null_bar ||= @null_bar_klass.new
     end
 
-    DEFAULT_OPTIONS = {
-      verbose: false,
-      method: :get,
-      iterations: 50,
-      mean: false,
-      threshold: 0.025,
-      percentile: 3,
-      concurrency: 15,
-    }.freeze
+    def default_options
+      super.merge(
+        verbose: false,
+        width: inputs.dup.map(&:length).push(30).sort.last,
+      ).freeze
+    end
   end
 end

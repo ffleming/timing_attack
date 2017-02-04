@@ -3,10 +3,8 @@ module TimingAttack
     include TimingAttack::Attacker
 
     def initialize(options: {})
-      @options = DEFAULT_OPTIONS.merge(options)
+      @options = default_options.merge(options)
       raise ArgumentError.new("Must provide :url key") if url.nil?
-      @concurrency = options.fetch(:concurrency, 3)
-      @iterations = options.fetch(:iterations, 20)
       @known = ""
     end
 
@@ -58,14 +56,5 @@ module TimingAttack
     def output
       @output ||= TimingAttack::Spinner.new
     end
-
-    DEFAULT_OPTIONS = {
-      verbose: true,
-      method: :get,
-      iterations: 50,
-      mean: false,
-      percentile: 3,
-      concurrency: 15,
-    }.freeze
   end
 end
