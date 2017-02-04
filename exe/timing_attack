@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 require 'timing_attack'
-require 'optparse'
-require 'json'
 
 options = {}
 opt_parser = OptionParser.new do |opts|

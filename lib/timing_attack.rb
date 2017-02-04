@@ -1,5 +1,6 @@
 require 'typhoeus'
 require 'json'
+require 'optparse'
 require 'ruby-progressbar'
 require "timing_attack/version"
 require "timing_attack/attacker"
