@@ -1,12 +1,5 @@
 module TimingAttack
   module Attacker
-    def initialize(options: {})
-      @options = DEFAULT_OPTIONS.merge(options)
-      raise ArgumentError.new("Must provide :url key") if url.nil?
-      @concurrency = options.fetch(:concurrency, 3)
-      @iterations = options.fetch(:iterations, 20)
-    end
-
     def run!
       if verbose?
         puts "Target: #{url}"
