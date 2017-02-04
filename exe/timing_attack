@@ -18,6 +18,7 @@ opt_parser = OptionParser.new do |opts|
   end
   opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
   opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
+  opts.on("--brute_force", "Brute force mode") { |bool| options[:brute_force] = bool }
   opts.on("--percentile N", "Use Nth percentile for calculations (default: 3)") { |num| options[:percentile] = num.to_i }
   opts.on("--mean", "Use mean for calculations") { |bool| options[:mean] = bool }
   opts.on("--median", "Use median for calculations") { |bool| options[:median] = bool }
@@ -46,7 +47,11 @@ elsif options[:mean]
 end
 
 begin
-  atk = TimingAttack::CliAttacker.new(inputs: ARGV, options: options)
+  atk = if options.delte(:brute_force)
+          TimingAttack::BruteForcer.new(options: options)
+        else
+          TimingAttack::Enumerator.new(inputs: ARGV, options: options)
+        end
   atk.run!
 rescue ArgumentError => e
   STDERR.puts e.message

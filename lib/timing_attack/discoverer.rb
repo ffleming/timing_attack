@@ -1,36 +1,44 @@
 module TimingAttack
-  class Discoverer
-    def initialize(url: , delta: 0.005, concurrency: 3, iterations: 10)
-      @options = {
-        url: url,
-        method: :get,
-        params: {
-          delta: delta
-        }
-      }
-      @iterations = iterations
-      @concurrency = concurrency
-      @delta = delta
+  class BruteForcer
+    def initialize(options: {})
+      @options = DEFAULT_OPTIONS.merge(options)
+      raise ArgumentError.new("Must provide :url key") if url.nil?
+      @concurrency = options.fetch(:concurrency, 3)
+      @iterations = options.fetch(:iterations, 20)
     end
 
     def run!
+      puts "Target: #{url}" if verbose?
       attack!
     end
 
     private
-    attr_reader :iterations, :concurrency, :attacks, :options, :delta
+    attr_reader :attacks, :options
+
+    %i(iterations url verbose width method mean percentile threshold concurrency).each do |sym|
+      define_method(sym) { options.fetch sym }
+    end
+    alias_method :verbose?, :verbose
 
     BYTES = (' '..'z').to_a
     def attack!
       known = ""
       while(true)
-        puts "\e[H\e[2J"
-        puts "#{spinner} '#{known}'"
-        attacks = BYTES.map { |byte| TestCase.new(input: "#{known}#{byte}", options: @options) }
+        attacks = BYTES.map do |byte|
+          TimingAttack::TestCases::Base.new(input: "#{known}#{byte}",
+                                            options: {
+                                                       url: url,
+                                                       method: :get,
+                                                     })
+        end
         hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
         iterations.times do
           attacks.each do |attack|
             req = attack.generate_hydra_request!
+            req.on_complete do |response|
+              puts "\e[H\e[2J"
+              puts "#{spinner} '#{known}'"
+            end
             hydra.queue req
           end
         end
@@ -39,6 +47,7 @@ module TimingAttack
         grouper = Grouper.new(attacks: attacks, group_by: { percentile: 3 })
         results = grouper.long_tests.map(&:input)
         if grouper.long_tests.count > 1
+          puts grouper.serialize
           raise StandardError.new("Got too many possibilities: #{results.join(', ')}")
         end
         known = results.first
@@ -51,6 +60,7 @@ module TimingAttack
       @spinner_i += 1
       SPINNER[@spinner_i % SPINNER.length]
     end
+
     def attack_byte!
       hydra = Typhoeus::Hydra.new(max_concurrency: concurrency)
       iterations.times do
@@ -65,6 +75,14 @@ module TimingAttack
       hydra.run
       attacks.each(&:process!)
     end
-
   end
+
+  DEFAULT_OPTIONS = {
+    verbose: false,
+    method: :get,
+    iterations: 50,
+    mean: false,
+    percentile: 3,
+    concurrency: 15,
+  }.freeze
 end

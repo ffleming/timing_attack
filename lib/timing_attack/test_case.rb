@@ -1,3 +1,4 @@
+=begin
 module TimingAttack
   class TestCase
     attr_reader :input
@@ -46,10 +47,10 @@ module TimingAttack
 
     def default_params
       {
-        login: input,
-        password: "test" * 1000
+        password: input
       }
     end
     attr_reader :times, :options, :percentiles
   end
 end
+=end

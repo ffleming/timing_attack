@@ -1,5 +1,5 @@
 module TimingAttack
-  class CliAttacker
+  class Enumerator
     def initialize(inputs: [], options: {})
       @options = DEFAULT_OPTIONS.merge(options)
       raise ArgumentError.new("url is a required argument") unless options.has_key? :url
@@ -8,11 +8,14 @@ module TimingAttack
       unless @options.has_key? :width
         @options[:width] = inputs.dup.map(&:length).push(30).sort.last
       end
-      @attacks = inputs.map { |input| TestCase.new(input: input, options: @options) }
+      @attacks = inputs.map { |input| TestCases::Base.new(input: input, options: @options) }
     end
 
     def run!
-      puts "Target: #{url}" if verbose?
+      if verbose?
+        puts "Target: #{url}"
+        puts "Method: #{method.to_s.upcase}"
+      end
       attack!
       puts report
     end
@@ -99,7 +102,7 @@ module TimingAttack
       mean: false,
       threshold: 0.025,
       percentile: 3,
-      concurrency: 15
+      concurrency: 15,
     }.freeze
   end
 end
