@@ -25,7 +25,7 @@ module TimingAttack
       known = ""
       while(true)
         attacks = BYTES.map do |byte|
-          TimingAttack::TestCases.new(input: "#{known}#{byte}",
+          TimingAttack::TestCase.new(input: "#{known}#{byte}",
                                       options: {
                                                  url: url,
                                                  method: :get,
