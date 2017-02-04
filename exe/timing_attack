@@ -47,7 +47,7 @@ elsif options[:mean]
 end
 
 begin
-  atk = if options.delte(:brute_force)
+  atk = if options.delete(:brute_force)
           TimingAttack::BruteForcer.new(options: options)
         else
           TimingAttack::Enumerator.new(inputs: ARGV, options: options)
