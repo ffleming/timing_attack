@@ -3,6 +3,7 @@ require 'json'
 require 'optparse'
 require 'ruby-progressbar'
 require "timing_attack/version"
+require "timing_attack/errors"
 require "timing_attack/attacker"
 require 'timing_attack/spinner'
 require "timing_attack/brute_forcer"

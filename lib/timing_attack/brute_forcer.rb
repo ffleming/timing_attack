@@ -13,8 +13,13 @@ module TimingAttack
     attr_reader :known
     POTENTIAL_BYTES = (' '..'z').to_a
     def attack!
-      while(true)
-        attack_byte!
+      begin
+        while(true)
+          attack_byte!
+        end
+      rescue Errors::BruteForcerError => e
+        puts "\n#{e.message}"
+        exit(1)
       end
     end
 
@@ -48,7 +53,9 @@ module TimingAttack
       grouper = Grouper.new(attacks: attacks, group_by: { percentile: options.fetch(:percentile) })
       results = grouper.long_tests.map(&:input)
       if grouper.long_tests.count > 1
-        raise StandardError.new("Got too many possibilities: #{results.join(', ')}")
+        msg = "Got too many possibilities to continue brute force:\n\t"
+        msg << results.join("\t")
+        raise Errors::BruteForcerError.new(msg)
       end
       @known = results.first
     end
