@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/timing_attack.svg)](http://badge.fury.io/rb/timing_attack)
 # timing_attack
 
 Profile web applications, sorting inputs into two categories based on
