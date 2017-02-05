@@ -3,6 +3,9 @@
 Profile web applications, sorting inputs into two categories based on
 discrepancies in the application's response time.
 
+If you need a known-vulnerable application for testing and/or development, see
+[Camelflage](https://github.com/ffleming/camelflage).
+
 ## Installation
 
 ```bash
