@@ -2,8 +2,11 @@ module TimingAttack
   module Attacker
     def initialize(options: {}, inputs: [])
       @options = default_options.merge(options)
-      raise ArgumentError.new("Must provide :url key") if url.nil?
-      raise ArgumentError.new("No fields specified for brute forcing") unless specified_input_field?
+      raise ArgumentError.new("Must provide url") if url.nil?
+      unless specified_input_option?
+        msg = "'#{INPUT_FLAG}' not found in url, parameters, body, or HTTP authentication options"
+        raise ArgumentError.new(msg)
+      end
       raise ArgumentError.new("Iterations can't be < 3") if iterations < 3
     end
 
@@ -41,23 +44,25 @@ module TimingAttack
       }.freeze
     end
 
-    def field_contains_input?(obj)
+    def option_contains_input?(obj)
       case obj
       when String
         obj.include?(INPUT_FLAG)
       when Symbol
-        field_contains_input?(obj.to_s)
+        option_contains_input?(obj.to_s)
       when Array
-        obj.any? {|el| field_contains_input?(el) }
+        obj.any? {|el| option_contains_input?(el) }
       when Hash
-        field_contains_input?(obj.keys) || field_contains_input?(obj.values)
+        option_contains_input?(obj.keys) || option_contains_input?(obj.values)
       end
     end
 
-    def specified_input_field?
-      input_fields = [ options[:basic_auth_password], options[:basic_auth_username],
-                      options[:body], options[:params], options[:url] ]
-      input_fields.any? { |field| field_contains_input?(field) }
+    def input_options
+      @input_options ||= %i(basic_auth_password basic_auth_username body params url)
+    end
+
+    def specified_input_option?
+      input_options.any? { |opt| option_contains_input?(options[opt]) }
     end
   end
 end
