@@ -16,18 +16,28 @@ module TimingAttack
       )
       @params = params_from(options.fetch :params, {})
       @body = params_from(options.fetch :body, {})
+      @basic_auth_username = params_from(
+        options.fetch(:basic_auth_username, "")
+      )
+      @basic_auth_password = params_from(
+        options.fetch(:basic_auth_password, "")
+      )
     end
 
     def generate_hydra_request!
-      req = Typhoeus::Request.new(
-        url,
-        method: options.fetch(:method),
-        followlocation: true,
-        params: params,
-        body: body
-      )
+      req = Typhoeus::Request.new(url, **typhoeus_opts)
       @hydra_requests.push req
       req
+    end
+
+    def typhoeus_opts
+      {
+        method: options.fetch(:method),
+        followlocation: true,
+      }.tap do |h|
+        h[:params] = params unless params.empty?
+        h[:body] = body unless body.empty?
+      end
     end
 
     def process!
