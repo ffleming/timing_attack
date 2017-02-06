@@ -17,7 +17,7 @@ opt_parser = OptionParser.new do |opts|
   end
   opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
   opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
-  opts.on("--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
+  opts.on("-b", "--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
   opts.on("--parameters STR", "JSON hash of parameters.  'INPUT' will be replaced with the attack string") do |str|
     options[:params] = JSON.parse(str)
   end
