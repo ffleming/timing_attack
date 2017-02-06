@@ -1,7 +1,6 @@
 require 'uri'
 module TimingAttack
   class TestCase
-    INPUT_FLAG = "INPUT"
 
     attr_reader :input
     def initialize(input: , options: {})
@@ -16,18 +15,34 @@ module TimingAttack
       )
       @params = params_from(options.fetch :params, {})
       @body = params_from(options.fetch :body, {})
+      @basic_auth_username = params_from(
+        options.fetch(:basic_auth_username, "")
+      )
+      @basic_auth_password = params_from(
+        options.fetch(:basic_auth_password, "")
+      )
     end
 
     def generate_hydra_request!
-      req = Typhoeus::Request.new(
-        url,
-        method: options.fetch(:method),
-        followlocation: true,
-        params: params,
-        body: body
-      )
+      req = Typhoeus::Request.new(url, **typhoeus_opts)
       @hydra_requests.push req
       req
+    end
+
+    def typhoeus_opts
+      {
+        method: options.fetch(:method),
+        followlocation: true,
+      }.tap do |h|
+        h[:params] = params unless params.empty?
+        h[:body] = body unless body.empty?
+        h[:userpwd] = typhoeus_basic_auth unless typhoeus_basic_auth.empty?
+      end
+    end
+
+    def typhoeus_basic_auth
+      return "" if basic_auth_username.empty? && basic_auth_password.empty?
+      "#{basic_auth_username}:#{basic_auth_password}"
     end
 
     def process!
@@ -70,5 +85,6 @@ module TimingAttack
     end
 
     attr_reader :times, :options, :percentiles, :url, :params, :body
+    attr_reader :basic_auth_username, :basic_auth_password
   end
 end

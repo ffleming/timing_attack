@@ -12,4 +12,5 @@ require "timing_attack/test_case"
 require "timing_attack/enumerator"
 
 module TimingAttack
+  INPUT_FLAG = "INPUT"
 end

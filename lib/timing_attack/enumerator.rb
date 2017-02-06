@@ -4,10 +4,8 @@ module TimingAttack
 
     def initialize(inputs: [], options: {})
       @inputs = inputs
-      @options = default_options.merge(options)
-      raise ArgumentError.new("url is a required argument") unless options.has_key? :url
       raise ArgumentError.new("Need at least 2 inputs") if inputs.count < 2
-      raise ArgumentError.new("Iterations can't be < 3") if iterations < 3
+      super(options: options)
       @attacks = inputs.map { |input| TestCase.new(input: input, options: @options) }
     end
 

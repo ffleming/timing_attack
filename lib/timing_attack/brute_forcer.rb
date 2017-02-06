@@ -3,8 +3,7 @@ module TimingAttack
     include TimingAttack::Attacker
 
     def initialize(options: {})
-      @options = default_options.merge(options)
-      raise ArgumentError.new("Must provide :url key") if url.nil?
+      super(options: options)
       @known = ""
     end
 
