@@ -37,7 +37,13 @@ module TimingAttack
       }.tap do |h|
         h[:params] = params unless params.empty?
         h[:body] = body unless body.empty?
+        h[:userpwd] = typhoeus_basic_auth unless typhoeus_basic_auth.empty?
       end
+    end
+
+    def typhoeus_basic_auth
+      return "" if basic_auth_username.empty? && basic_auth_password.empty?
+      "#{basic_auth_username}:#{basic_auth_password}"
     end
 
     def process!
@@ -80,5 +86,6 @@ module TimingAttack
     end
 
     attr_reader :times, :options, :percentiles, :url, :params, :body
+    attr_reader :basic_auth_username, :basic_auth_password
   end
 end
