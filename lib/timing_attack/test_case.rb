@@ -1,6 +1,5 @@
 require 'uri'
 module TimingAttack
-  INPUT_FLAG = "INPUT"
   class TestCase
 
     attr_reader :input
