@@ -5,6 +5,7 @@ module TimingAttack
     def initialize(options: {})
       @options = default_options.merge(options)
       raise ArgumentError.new("Must provide :url key") if url.nil?
+      raise ArgumentError.new("No fields specified for brute forcing") unless specified_brute_force_field?
       @known = ""
     end
 
@@ -62,6 +63,25 @@ module TimingAttack
 
     def output
       @output ||= TimingAttack::Spinner.new
+    end
+
+    def field_is_brute_forceable?(obj)
+      case obj
+      when String
+        obj.include?(INPUT_FLAG)
+      when Symbol
+        field_is_brute_forceable?(obj.to_s)
+      when Array
+        obj.any? {|el| field_is_brute_forceable?(el) }
+      when Hash
+        field_is_brute_forceable?(obj.keys) || field_is_brute_forceable?(obj.values)
+      end
+    end
+
+    def specified_brute_force_field?
+      brute_fields = [ options[:basic_auth_password], options[:basic_auth_username],
+                      options[:body], options[:params], options[:url] ]
+      brute_fields.any? { |field| field_is_brute_forceable?(field) }
     end
   end
 end
