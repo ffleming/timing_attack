@@ -19,7 +19,9 @@ class TimingAttackCli
     @opt_parser ||= OptionParser.new do |opts|
       opts.program_name = File.basename(__FILE__)
       opts.banner = "#{opts.program_name} [options] -u <target> <inputs>"
-      opts.on("-u URL", "--url URL", "URL of endpoint to profile") { |str| options[:url] = str }
+      opts.on("-u URL", "--url URL", "URL of endpoint to profile.  'INPUT' will be replaced with the attack string") do |str|
+        options[:url] = str
+      end
       opts.on("-n NUM", "--number NUM", "Requests per input (default: 50)") do |num|
         options[:iterations] = num.to_i
       end
