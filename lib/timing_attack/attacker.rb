@@ -46,18 +46,18 @@ module TimingAttack
       when String
         obj.include?(INPUT_FLAG)
       when Symbol
-        field_is_brute_forceable?(obj.to_s)
+        field_contains_input?(obj.to_s)
       when Array
-        obj.any? {|el| field_is_brute_forceable?(el) }
+        obj.any? {|el| field_contains_input?(el) }
       when Hash
-        field_is_brute_forceable?(obj.keys) || field_is_brute_forceable?(obj.values)
+        field_contains_input?(obj.keys) || field_contains_input?(obj.values)
       end
     end
 
     def specified_input_field?
       input_fields = [ options[:basic_auth_password], options[:basic_auth_username],
                       options[:body], options[:params], options[:url] ]
-      input_fields.any? { |field| field_is_brute_forceable?(field) }
+      input_fields.any? { |field| field_contains_input?(field) }
     end
   end
 end
