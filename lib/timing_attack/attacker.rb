@@ -36,6 +36,8 @@ module TimingAttack
         concurrency: 15,
         params: {},
         body: {},
+        basic_auth_username: "",
+        basic_auth_password: ""
       }.freeze
     end
 
