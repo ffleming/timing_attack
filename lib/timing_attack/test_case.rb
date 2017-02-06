@@ -1,7 +1,7 @@
 require 'uri'
 module TimingAttack
+  INPUT_FLAG = "INPUT"
   class TestCase
-    INPUT_FLAG = "INPUT"
 
     attr_reader :input
     def initialize(input: , options: {})
