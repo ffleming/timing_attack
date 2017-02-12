@@ -24,8 +24,8 @@ timing_attack [options] -u <target> <inputs>
     -p, --post                       Use POST, not GET
     -q, --quiet                      Quiet mode (don't display progress bars)
     -b, --brute-force                Brute force mode
-        --parameters STR             JSON hash of parameters.  'INPUT' will be replaced with the attack string
-        --body STR                   JSON of body paramets to be sent to Typhoeus.  'INPUT' will be replaced with the attack string
+        --parameters STR             JSON hash of URL parameters.  'INPUT' will be replaced with the attack string
+        --body STR                   JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string
         --http-username STR          HTTP basic authentication username.  'INPUT' will be replaced with the attack string
         --http-password STR          HTTP basic authentication password.  'INPUT' will be replaced with the attack string
         --percentile NUM             Use NUMth percentile for calculations (default: 3)

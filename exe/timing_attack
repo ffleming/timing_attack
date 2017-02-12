@@ -34,10 +34,10 @@ class TimingAttackCli
       opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
       opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
       opts.on("-b", "--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
-      opts.on("--parameters STR", "JSON hash of parameters.  'INPUT' will be replaced with the attack string") do |str|
+      opts.on("--parameters STR", "JSON hash of URL parameters.  'INPUT' will be replaced with the attack string") do |str|
         options[:params] = JSON.parse(str)
       end
-      opts.on("--body STR", "JSON of body paramets to be sent to Typhoeus.  'INPUT' will be replaced with the attack string") do |str|
+      opts.on("--body STR", "JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string") do |str|
         options[:body] = JSON.parse(str)
       end
       opts.on("--http-username STR", "HTTP basic authentication username.  'INPUT' will be replaced with the attack string") do |str|
