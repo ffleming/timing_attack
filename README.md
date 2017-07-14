@@ -1,4 +1,6 @@
+![Arsenal_2017](https://cdn.rawgit.com/toolswatch/badges/master/arsenal/2017.svg)
 [![Gem Version](https://badge.fury.io/rb/timing_attack.svg)](http://badge.fury.io/rb/timing_attack)
+
 # timing_attack
 
 Profile web applications, sorting inputs into two categories based on
