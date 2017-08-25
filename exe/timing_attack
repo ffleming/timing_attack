@@ -15,6 +15,10 @@ class TimingAttackCli
 
   private
 
+  def json_file(filename)
+    JSON.parse(File.read(filename))
+  end
+
   def opt_parser
     @opt_parser ||= OptionParser.new do |opts|
       opts.program_name = File.basename(__FILE__)
@@ -37,8 +41,14 @@ class TimingAttackCli
       opts.on("--parameters STR", "JSON hash of URL parameters.  'INPUT' will be replaced with the attack string") do |str|
         options[:params] = JSON.parse(str)
       end
+      opts.on("--parameters-file FILE", "Name of file containing parameters as with --parameters") do |str|
+        options[:params] = json_file(str)
+      end
       opts.on("--body STR", "JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string") do |str|
         options[:body] = JSON.parse(str)
+      end
+      opts.on("--body-file FILE", "JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string") do |str|
+        options[:body] = json_file(str)
       end
       opts.on("--http-username STR", "HTTP basic authentication username.  'INPUT' will be replaced with the attack string") do |str|
         options[:basic_auth_username] = str
