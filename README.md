@@ -24,8 +24,11 @@ timing_attack [options] -u <target> <inputs>
     -p, --post                       Use POST, not GET
     -q, --quiet                      Quiet mode (don't display progress bars)
     -b, --brute-force                Brute force mode
+    -i, --inputs-file FILE           Read inputs from specified file, one per line
         --parameters STR             JSON hash of URL parameters.  'INPUT' will be replaced with the attack string
+        --parameters-file FILE       Name of file containing parameters as with --parameters
         --body STR                   JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string
+        --body-file FILE             JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string
         --http-username STR          HTTP basic authentication username.  'INPUT' will be replaced with the attack string
         --http-password STR          HTTP basic authentication password.  'INPUT' will be replaced with the attack string
         --percentile NUM             Use NUMth percentile for calculations (default: 3)
@@ -93,6 +96,41 @@ and `--http-password` can be specified.  `INPUT` will be replaced with the
 current attack string as above.
 
 The `--parameters` and `--body` options must be specified in JSON format.
+
+## Reading from files
+
+Body contents, parameters, and inputs can all be read from a file specified on
+the comamnd line with `--body-file`, `--parameters-file`, and `--inputs-file`
+respectively.  `--body-file` and `--parameters-file` expect the file's contents
+to be a JSON hash; `--inputs-file` simply expects one input per line.
+
+Example:
+```
+% cat inputs.txt
+charles@poodles.com
+camel@sahara.com
+woofer@beagles.net
+bactrian@dev.null
+dromedary@dev.null
+alpaca@theand.es
+```
+```
+% cat params.txt
+{"login":"INPUT", "password":"123", "delta":"10"}
+```
+```
+% timing_attack -q -u "http://localhost:3000/timing/login" \
+                      --parameters-file params.txt \
+                      --inputs-file inputs.txt
+Short tests:
+  woofer@beagles.net            0.0023
+  alpaca@theand.es              0.0025
+Long tests:
+  bactrian@dev.null             0.1042
+  charles@poodles.com           0.1046
+  camel@sahara.com              0.1051
+  dromedary@dev.null            0.1054
+```
 
 ## How it works
 
