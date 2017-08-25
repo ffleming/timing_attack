@@ -28,7 +28,7 @@ timing_attack [options] -u <target> <inputs>
         --parameters STR             JSON hash of URL parameters.  'INPUT' will be replaced with the attack string
         --parameters-file FILE       Name of file containing parameters as with --parameters
         --body STR                   JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string
-        --body-file FILE             JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string
+        --body-file FILE             Name of file containing parameters as with --body
         --http-username STR          HTTP basic authentication username.  'INPUT' will be replaced with the attack string
         --http-password STR          HTTP basic authentication password.  'INPUT' will be replaced with the attack string
         --percentile NUM             Use NUMth percentile for calculations (default: 3)
