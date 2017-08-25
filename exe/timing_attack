@@ -38,6 +38,9 @@ class TimingAttackCli
       opts.on("-p", "--post", "Use POST, not GET") { |bool| options[:method] = bool ? :post : :get }
       opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
       opts.on("-b", "--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
+      opts.on("-i FILE", "--inputs-file FILE", "Read inputs from specified file, one per line") do |str|
+        options[:inputs] = File.readlines(str).map(&:strip)
+      end
       opts.on("--parameters STR", "JSON hash of URL parameters.  'INPUT' will be replaced with the attack string") do |str|
         options[:params] = JSON.parse(str)
       end
@@ -80,6 +83,7 @@ class TimingAttackCli
 
   def sanitize_options
     options[:verbose] = true if options[:verbose].nil?
+    options[:inputs] = ARGV if options[:inputs].nil?
     if options[:percentile]
       options.delete(:mean)
     elsif options[:median]
@@ -94,7 +98,8 @@ class TimingAttackCli
       atk = if options.delete(:brute_force)
               TimingAttack::BruteForcer.new(options: options)
             else
-              TimingAttack::Enumerator.new(inputs: ARGV, options: options)
+              inputs = options.delete(:inputs)
+              TimingAttack::Enumerator.new(inputs: inputs, options: options)
             end
       atk.run!
     rescue ArgumentError => e
