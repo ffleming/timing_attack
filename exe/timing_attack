@@ -16,7 +16,21 @@ class TimingAttackCli
   private
 
   def json_file(filename)
-    JSON.parse(File.read(filename))
+    begin
+      JSON.parse(File.read(filename))
+    rescue JSON::ParserError => e
+      raise TimingAttack::Errors::InvalidFileFormatError.new("Invalid JSON in #{filename}: #{e.message}")
+    rescue Errno::ENOENT
+      raise TimingAttack::Errors::FileNotFoundError.new("#{filename} not found")
+    end
+  end
+
+  def flat_file(filename)
+    begin
+      File.readlines(filename).map(&:strip)
+    rescue Errno::ENOENT
+      raise TimingAttack::Errors::FileNotFoundError.new("#{filename} not found")
+    end
   end
 
   def opt_parser
@@ -39,7 +53,7 @@ class TimingAttackCli
       opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
       opts.on("-b", "--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
       opts.on("-i FILE", "--inputs-file FILE", "Read inputs from specified file, one per line") do |str|
-        options[:inputs] = File.readlines(str).map(&:strip)
+        options[:inputs] = flat_file(filename)
       end
       opts.on("--parameters STR", "JSON hash of URL parameters.  'INPUT' will be replaced with the attack string") do |str|
         options[:params] = JSON.parse(str)
