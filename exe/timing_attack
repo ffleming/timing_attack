@@ -88,6 +88,9 @@ class TimingAttackCli
   def parse_options
     begin
       opt_parser.parse!
+    rescue TimingAttack::Errors::InvalidFileFormatError, TimingAttack::Errors::FileNotFoundError => e
+      STDERR.puts e.message
+      exit
     rescue OptionParser::InvalidOption => e
       STDERR.puts e.message
       puts opt_parser
