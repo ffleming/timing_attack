@@ -13,8 +13,9 @@ module TimingAttack
         options.fetch(:url).
         gsub(INPUT_FLAG, input)
       )
-      @params = params_from(options.fetch :params, {})
-      @body = params_from(options.fetch :body, {})
+      @params = params_from(options.fetch(:params, {}))
+      @body = params_from(options.fetch(:body, {}))
+      @headers = params_from(options.fetch(:headers, {}))
       @basic_auth_username = params_from(
         options.fetch(:basic_auth_username, "")
       )
@@ -36,6 +37,7 @@ module TimingAttack
       }.tap do |h|
         h[:params] = params unless params.empty?
         h[:body] = body unless body.empty?
+        h[:headers] = headers unless headers.empty?
         h[:userpwd] = typhoeus_basic_auth unless typhoeus_basic_auth.empty?
       end
     end
@@ -85,6 +87,6 @@ module TimingAttack
     end
 
     attr_reader :times, :options, :percentiles, :url, :params, :body
-    attr_reader :basic_auth_username, :basic_auth_password
+    attr_reader :basic_auth_username, :basic_auth_password, :headers
   end
 end

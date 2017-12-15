@@ -3,9 +3,10 @@ module TimingAttack
 
     STATES = %w(| / - \\)
     def increment
-      @spinner_i ||= 0
-      @spinner_i += 1
-      print "\r #{STATES[@spinner_i % STATES.length]}"
+      @_spinner ||= 0
+      print "\r #{STATES[@_spinner % STATES.length]}"
+      @_spinner += 1
+      @_spinner = 0 if @_spinner >= STATES.length
     end
   end
 end

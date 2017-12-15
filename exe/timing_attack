@@ -61,6 +61,12 @@ class TimingAttackCli
       opts.on("--parameters-file FILE", "Name of file containing parameters as with --parameters") do |str|
         options[:params] = json_file(str)
       end
+      opts.on("--headers STR", "JSON hash of headers.  'INPUT' will be replaced with the attack string") do |str|
+        options[:headers] = JSON.parse(str)
+      end
+      opts.on("--headers-file FILE", "Name of file containing headers as with --headers") do |str|
+        options[:headers] = json_file(str)
+      end
       opts.on("--body STR", "JSON hash of parameters to be included in the request body.  'INPUT' will be replaced with the attack string") do |str|
         options[:body] = JSON.parse(str)
       end

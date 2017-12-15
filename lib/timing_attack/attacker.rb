@@ -4,7 +4,7 @@ module TimingAttack
       @options = default_options.merge(options)
       raise ArgumentError.new("Must provide url") if url.nil?
       unless specified_input_option?
-        msg = "'#{INPUT_FLAG}' not found in url, parameters, body, or HTTP authentication options"
+        msg = "'#{INPUT_FLAG}' not found in url, parameters, body, headers, or HTTP authentication options"
         raise ArgumentError.new(msg)
       end
       raise ArgumentError.new("Iterations can't be < 3") if iterations < 3
@@ -15,6 +15,7 @@ module TimingAttack
         puts "Target: #{url}"
         puts "Method: #{method.to_s.upcase}"
         puts "Parameters: #{params.inspect}" unless params.empty?
+        puts "Headers: #{headers.inspect}" unless headers.empty?
         puts "Body: #{body.inspect}" unless body.empty?
       end
       attack!
@@ -23,7 +24,7 @@ module TimingAttack
     private
     attr_reader :attacks, :options
 
-    %i(iterations url verbose width method mean percentile threshold concurrency params body).each do |sym|
+    %i(iterations url verbose width method mean percentile threshold concurrency params body headers).each do |sym|
       define_method(sym) { options.fetch sym }
     end
     alias_method :verbose?, :verbose
@@ -39,6 +40,7 @@ module TimingAttack
         concurrency: 15,
         params: {},
         body: {},
+        headers: {},
         basic_auth_username: "",
         basic_auth_password: ""
       }.freeze
@@ -58,7 +60,7 @@ module TimingAttack
     end
 
     def input_options
-      @input_options ||= %i(basic_auth_password basic_auth_username body params url)
+      @input_options ||= %i(basic_auth_password basic_auth_username body params url headers)
     end
 
     def specified_input_option?
