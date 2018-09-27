@@ -1,4 +1,4 @@
-![Arsenal_2017](https://cdn.rawgit.com/toolswatch/badges/master/arsenal/2017.svg)
+[![Black Hat Arsenal]( https://github.com/toolswatch/badges/blob/master/arsenal/usa/2017.svg)](https://www.toolswatch.org/2017/06/the-black-hat-arsenal-usa-2017-phenomenal-line-up-announced/)
 [![Gem Version](https://badge.fury.io/rb/timing_attack.svg)](http://badge.fury.io/rb/timing_attack)
 
 # timing_attack
