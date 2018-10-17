@@ -157,7 +157,7 @@ with percentiles above ~15, median, and mean are all quite noisy, so you should
 probably keep `--percentile` low.
 
 I was very surprised to find that I get correct results against remote targets
-with `--num` around 20.  Default is 5, as that has been sufficient in my tests
+with `--number` around 20.  Default is 50, as that has been sufficient in my tests
 for LAN and local targets.
 
 ## Contributing
