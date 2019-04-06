@@ -53,7 +53,7 @@ class TimingAttackCli
       opts.on("-q", "--quiet", "Quiet mode (don't display progress bars)") { |bool| options[:verbose] = !bool }
       opts.on("-b", "--brute-force", "Brute force mode") { |bool| options[:brute_force] = bool }
       opts.on("-i FILE", "--inputs-file FILE", "Read inputs from specified file, one per line") do |str|
-        options[:inputs] = flat_file(filename)
+        options[:inputs] = flat_file(str)
       end
       opts.on("--parameters STR", "JSON hash of URL parameters.  'INPUT' will be replaced with the attack string") do |str|
         options[:params] = JSON.parse(str)
