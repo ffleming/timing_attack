@@ -58,7 +58,7 @@ locally at `http://localhost:3000`.  Let's say that we know the following:
 * `charles@poodles.com` exists in the database
 * `invalid@fake.fake` does not exist in the database
 
-And we want to know if `bactrian@dev.null` and `alpaca@dev.null` exist in
+and we want to know if `bactrian@dev.null` and `alpaca@dev.null` exist in
 the database.
 
 We execute (using `-q` to suppress the progress bar)
@@ -147,7 +147,7 @@ The various inputs are each thrown at the endpoint `--number` times.  The
 `--percentile`th percentile of each input's results is considered the
 representative result for that input.  Inputs are then sorted according to
 their representative results and the largest spike in their graph is found.
-Results then split into short and long groups according to this spike.
+Results are then split into short and long groups according to this spike.
 
 The `--mean` flag uses the average of results for a particular input as its
 representative result.  The `--median` flag simply uses the 50th percentile.
@@ -169,8 +169,3 @@ Bug reports and pull requests are welcome [here](https://github.com/ffleming/tim
 timing_attack is quick and dirty.
 
 Also, don't use timing_attack against machines that aren't yours.
-
-## Todo
-* Tests
-* More intelligent filtering than nth-percentile + spike detection
-  * CW&R's box test
